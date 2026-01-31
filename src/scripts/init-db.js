@@ -11,7 +11,7 @@ async function initDatabase() {
     const schemaPath = path.join(__dirname, '../sql/schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
 
-    // 分割SQL语句（按分号分割）
+    // 分割SQL语句
     const statements = schema
       .split(';')
       .map(s => s.trim())
@@ -23,7 +23,6 @@ async function initDatabase() {
         await query(statement);
         console.log('✅ Executed:', statement.substring(0, 50) + '...');
       } catch (error) {
-        // 忽略"已存在"错误
         if (!error.message.includes('already exists')) {
           console.error('❌ Error:', error.message);
         }
@@ -31,8 +30,6 @@ async function initDatabase() {
     }
 
     console.log('✅ Database initialized successfully!');
-
-    // 插入测试数据
     console.log('📝 Inserting seed data...');
     await insertSeedData();
     console.log('✅ Seed data inserted!');
@@ -44,50 +41,48 @@ async function initDatabase() {
 }
 
 async function insertSeedData() {
-  // 插入测试用户
-  await query(`
-    INSERT INTO users (x_handle, x_user_id) 
-    VALUES ($1, $2)
-    ON CONFLICT (x_handle) DO NOTHING
-  `, ['testuser', '12345']);
+  try {
+    // 插入测试用户
+    const userResult = await query(`
+      INSERT INTO users (x_handle, x_user_id)
+      VALUES ($1, $2)
+      ON CONFLICT (x_handle) DO NOTHING
+      RETURNING id
+    `, ['testuser', '12345']);
 
-  // 插入测试AI代理
-  const agentResult = await query(`
-    INSERT INTO agents (name, type, api_key, owner_id, description, capabilities, interests, bio, status)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    ON CONFLICT (name) DO NOTHING
-    RETURNING id
-  `, [
-    'TestBot',
-    'ai',
-    'agent_test123',
-    (await query('SELECT id FROM users WHERE x_handle = $1', ['testuser'])).rows[0].id,
-    '这是一个测试AI代理',
-    ['coding', 'writing'],
-    ['ai', 'programming'],
-    'Hello, I am TestBot!',
-    'claimed'
-  ]);
+    let userId;
+    if (userResult.rows.length > 0) {
+      userId = userResult.rows[0].id;
+      console.log('  ✅ Created test user:', userId);
+    } else {
+      const existing = await query('SELECT id FROM users WHERE x_handle = $1', ['testuser']);
+      userId = existing.rows[0].id;
+    }
 
-  if (agentResult.rows.length > 0) {
-    console.log('  ✅ Created test agent:', agentResult.rows[0].id);
-  }
+    // 插入测试AI代理
+    const agentResult = await query(`
+      INSERT INTO agents (name, type, api_key, owner_id, description, capabilities, interests, bio, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ON CONFLICT (name) DO NOTHING
+      RETURNING id
+    `, [
+      'TestBot',
+      'ai',
+      'agent_test123456',
+      userId,
+      '这是一个测试AI代理',
+      ['coding', 'writing'],
+      ['ai', 'programming'],
+      'Hello, I am TestBot!',
+      'claimed'
+    ]);
 
-  // 插入测试帖子
-  const postResult = await query(`
-    INSERT INTO posts (author_id, type, title, content, metadata)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING id
-  `, [
-    (await query('SELECT id FROM agents WHERE name = $1', ['TestBot'])).rows[0].id,
-    'idea',
-    'NexusAI的第一个帖子',
-    '这是NexusAI系统的第一个测试帖子。欢迎来到AI代理的社交网络！',
-    '{}'
-  ]);
+    if (agentResult.rows.length > 0) {
+      console.log('  ✅ Created test agent:', agentResult.rows[0].id);
+    }
 
-  if (postResult.rows.length > 0) {
-    console.log('  ✅ Created test post:', postResult.rows[0].id);
+  } catch (error) {
+    console.error('❌ Seed data error:', error);
   }
 }
 
