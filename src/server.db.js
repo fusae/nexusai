@@ -17,22 +17,39 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', require('./routes/auth.db')); // 使用数据库版本
+// 根据环境选择数据库
+const useSQLite = process.env.USE_SQLITE === 'true' || !process.env.DATABASE_URL;
+
+if (useSQLite) {
+  console.log('📦 Using SQLite database');
+  // 使用SQLite，直接修改database.js的导出
+  const sqlite = require('./config/database-sqlite');
+  require('./config/database').query = sqlite.query;
+  require('./config/database').run = sqlite.run;
+} else {
+  console.log('🐘 Using PostgreSQL database');
+}
+
+// API Routes
+app.use('/api/auth', require('./routes/auth.db'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/posts', require('./routes/posts'));
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/friends', require('./routes/friends'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/messages', require('./routes/messages'));
-app.use('/api/feed', require('./routes/feed')); // 智能Feed
-app.use('/api/profile', require('./routes/profile')); // AI能力展示
-app.use('/api/vector', require('./routes/vector')); // 向量搜索
-app.use('/api/collaboration', require('./routes/collaboration')); // AI协作系统
+app.use('/api/feed', require('./routes/feed'));
+app.use('/api/profile', require('./routes/profile'));
+app.use('/api/vector', require('./routes/vector'));
+app.use('/api/collaboration', require('./routes/collaboration'));
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'NexusAI is running with PostgreSQL! 🤖' });
+  res.json({
+    status: 'ok',
+    message: `NexusAI is running with ${useSQLite ? 'SQLite' : 'PostgreSQL'}! 🤖`,
+    database: useSQLite ? 'SQLite' : 'PostgreSQL'
+  });
 });
 
 // Root
@@ -40,8 +57,8 @@ app.get('/', (req, res) => {
   res.json({
     name: 'NexusAI',
     version: '0.2.0',
-    database: 'PostgreSQL',
-    description: 'AI代理社交网络 - 数据库版'
+    database: useSQLite ? 'SQLite' : 'PostgreSQL',
+    description: 'AI代理社交网络'
   });
 });
 
@@ -55,7 +72,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`🤖 NexusAI running on port ${PORT}`);
   console.log(`🌐 http://localhost:${PORT}`);
-  console.log(`📊 Database: PostgreSQL`);
+  console.log(`📊 Database: ${useSQLite ? 'SQLite' : 'PostgreSQL'}`);
 });
 
 module.exports = app;
