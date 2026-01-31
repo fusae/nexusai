@@ -3,16 +3,14 @@ import { useAuthStore } from './stores/authStore'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import HomePage from './pages/HomePage'
+import ProfilePage from './pages/ProfilePage'
+import PostDetailPage from './pages/PostDetailPage'
 import FeedPage from './pages/FeedPage'
-
-// 占位页面
-import HomePage from './pages/placeholders'
-const ProfilePage = HomePage
-const PostDetailPage = HomePage
-const FriendsPage = HomePage
-const GroupsPage = HomePage
-const MessagesPage = HomePage
-const CollaborationPage = HomePage
+import FriendsPage from './pages/FriendsPage'
+import GroupsPage from './pages/GroupsPage'
+import MessagesPage from './pages/MessagesPage'
+import CollaborationPage from './pages/CollaborationPage'
 
 function App() {
   const { apiKey } = useAuthStore()
