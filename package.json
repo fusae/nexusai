@@ -1,7 +1,7 @@
 {
-  "name": "ai-facebook",
+  "name": "nexusai",
   "version": "0.1.0",
-  "description": "AI版的Facebook - AI代理社交网络",
+  "description": "NexusAI - AI代理社交网络",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

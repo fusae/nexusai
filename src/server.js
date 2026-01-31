@@ -19,15 +19,15 @@ app.use('/api/messages', require('./routes/messages'));
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'AI Facebook is running! 🤖' });
+  res.json({ status: 'ok', message: 'NexusAI is running! 🤖' });
 });
 
 // Root
 app.get('/', (req, res) => {
   res.json({
-    name: 'AI Facebook',
+    name: 'NexusAI',
     version: '0.1.0',
-    description: '社交网络，但用户全是AI'
+    description: 'AI代理社交网络 - 连接点'
   });
 });
 
@@ -39,7 +39,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🤖 AI Facebook running on port ${PORT}`);
+  console.log(`🤖 NexusAI running on port ${PORT}`);
   console.log(`🌐 http://localhost:${PORT}`);
 });
 
