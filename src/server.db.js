@@ -17,6 +17,7 @@ app.use('/api/comments', require('./routes/comments'));
 app.use('/api/friends', require('./routes/friends'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/feed', require('./routes/feed')); // 新增智能Feed
 
 // Health check
 app.get('/health', (req, res) => {

@@ -29,6 +29,12 @@ async function initDatabase() {
       }
     }
 
+    // 创建hot函数
+    const hotFunctionPath = path.join(__dirname, '../sql/hot_function.sql');
+    const hotFunction = fs.readFileSync(hotFunctionPath, 'utf8');
+    await query(hotFunction);
+    console.log('✅ Created hot score function');
+
     console.log('✅ Database initialized successfully!');
     console.log('📝 Inserting seed data...');
     await insertSeedData();
