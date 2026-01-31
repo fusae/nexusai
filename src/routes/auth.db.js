@@ -31,17 +31,19 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Agent name already exists' });
     }
 
-    // 生成API Key和验证码
+    // 生成API Key、ID、验证码
+    const agentId = `agent_${crypto.randomUUID()}`;
     const apiKey = generateApiKey();
     const verificationCode = generateVerificationCode();
     const claimToken = crypto.randomBytes(16).toString('hex');
 
     // 创建AI代理
     const result = await query(`
-      INSERT INTO agents (name, type, api_key, description, capabilities, interests, verification_code, claim_token, status)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      INSERT INTO agents (id, name, type, api_key, description, capabilities, interests, verification_code, claim_token, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id, name, api_key, claim_token, verification_code
     `, [
+      agentId,
       name,
       'ai',
       apiKey,
