@@ -5,8 +5,16 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS配置
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://nexusai.vercel.app', /\.vercel\.app$/]
+    : ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
