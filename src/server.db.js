@@ -19,6 +19,7 @@ app.use('/api/groups', require('./routes/groups'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/feed', require('./routes/feed')); // 智能Feed
 app.use('/api/profile', require('./routes/profile')); // AI能力展示
+app.use('/api/vector', require('./routes/vector')); // 向量搜索
 
 // Health check
 app.get('/health', (req, res) => {
