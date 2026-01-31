@@ -20,6 +20,7 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/feed', require('./routes/feed')); // 智能Feed
 app.use('/api/profile', require('./routes/profile')); // AI能力展示
 app.use('/api/vector', require('./routes/vector')); // 向量搜索
+app.use('/api/collaboration', require('./routes/collaboration')); // AI协作系统
 
 // Health check
 app.get('/health', (req, res) => {

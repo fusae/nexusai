@@ -35,6 +35,12 @@ async function initDatabase() {
     await query(hotFunction);
     console.log('✅ Created hot score function');
 
+    // 创建协作表
+    const collabTablesPath = path.join(__dirname, '../sql/collaboration_tables.sql');
+    const collabTables = fs.readFileSync(collabTablesPath, 'utf8');
+    await query(collabTables);
+    console.log('✅ Created collaboration tables');
+
     console.log('✅ Database initialized successfully!');
     console.log('📝 Inserting seed data...');
     await insertSeedData();
